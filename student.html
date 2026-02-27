@@ -8,31 +8,26 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
-
 <div class="game-window">
     <div class="window-header"><span>6학년 5반 감정 메이커</span><span>2026.02.27</span></div>
-    
     <div class="main-ui">
         <div class="left-panel">
             <div class="char-frame">
                 <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Man%20Standing.png" width="100">
             </div>
             <div class="status-box">
-                <div class="stat-row">에너지 <div class="gauge-bg"><div id="bar-en" class="gauge-fill" style="background: #ff4757;"></div></div></div>
-                <div class="stat-row">회복력 <div class="gauge-bg"><div id="bar-re" class="gauge-fill" style="background: #2ed573;"></div></div></div>
+                <div class="stat-row">에너지 <div class="gauge-bg"><div id="bar-en" class="gauge-fill" style="background: #ff4757; width:20%;"></div></div></div>
+                <div class="stat-row">회복력 <div class="gauge-bg"><div id="bar-re" class="gauge-fill" style="background: #2ed573; width:20%;"></div></div></div>
             </div>
         </div>
-
         <div class="right-panel">
             <h3>[ 감정 아이콘 선택 ]</h3>
             <button class="pixel-btn" onclick="openMix('green')">🏃 활기</button>
             <button class="pixel-btn" onclick="openMix('blue')">☁️ 차분</button>
-            
             <div id="mixZone" style="display:none; margin-top:15px; background:#222; color:#ffd700; padding:15px; text-align:center;">
                 <span id="s1">?</span> + <span id="s2">?</span> = <span id="sR">?</span>
             </div>
-
-            <textarea id="diary" class="diary-box" style="margin-top:10px;" placeholder="오늘 기분은 어떤가요?"></textarea>
+            <textarea id="diary" class="diary-box" style="margin-top:10px; width:100%; height:60px;" placeholder="오늘 기분은 어떤가요?"></textarea>
             <p id="questText" style="font-size:13px; color:blue;"></p>
             <button class="pixel-btn" id="finishBtn" style="display:none; width:100%;" onclick="saveData()">교실 입장하기</button>
         </div>
@@ -40,21 +35,19 @@
 </div>
 
 <script>
-    // ★★★ [주의] 아래 내용을 본인의 Firebase 설정값으로 반드시 채워주세요! ★★★
     const firebaseConfig = {
-        apiKey: "AIzaSyDw773x1yot2uncAMl_gTQ6z6Njhgh1Od8",
-        authDomain: "secret-quest-class.firebaseapp.com",
-        projectId: "secret-quest-class",
-        storageBucket: "secret-quest-class.firebasestorage.app",
-        messagingSenderId: "397245266210",
-        appId: "1:397245266210:web:fde35d6a4dfd6ca7070d7b",
-        measurementId: "G-FJ44D15YPN"
+      apiKey: "AIzaSyDw773x1yot2uncAMl_gTQ6z6Njhgh1Od8",
+      authDomain: "secret-quest-class.firebaseapp.com",
+      databaseURL: "https://secret-quest-class-default-rtdb.firebaseio.com", // ← 추가됨!
+      projectId: "secret-quest-class",
+      storageBucket: "secret-quest-class.firebasestorage.app",
+      messagingSenderId: "397245266210",
+      appId: "1:397245266210:web:fde35d6a4dfd6ca7070d7b"
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
     let e1="", e2="", group="";
-    
     function openMix(g) {
         group = g;
         e1 = (g === 'green') ? "😆" : "😌";
@@ -64,8 +57,6 @@
         document.getElementById('sR').textContent = "✨";
         document.getElementById('mixZone').style.display = "block";
         document.getElementById('finishBtn').style.display = "block";
-        
-        // 스탯 바 애니메이션
         document.getElementById('bar-en').style.width = (g === 'green' ? "80%" : "30%");
         document.getElementById('bar-re').style.width = (g === 'green' ? "20%" : "90%");
         document.getElementById('questText').textContent = "오늘의 퀘스트: 친구에게 인사하기!";
@@ -75,7 +66,7 @@
         const diary = document.getElementById('diary').value;
         database.ref('room/student1').set({
             name: "홍길동", num: 1, emoji: "✨", diary: diary, status: "online"
-        }).then(() => location.href = "classroom.html");
+        }).then(() => { alert("저장 완료!"); location.href = "classroom.html"; });
     }
 </script>
 </body>
