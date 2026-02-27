@@ -2,169 +2,80 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>6학년 5반 마음 육성 시뮬레이션</title>
+    <title>6학년 5반 감정 육성</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <style>
-        /* [프린세스 메이커 스타일 CSS] */
-        @font-face { font-family: 'DungGeunMo'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff'); }
-        body { background: #fbc2eb; font-family: 'DungGeunMo', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .game-window { width: 850px; background: #fffafa; border: 6px double #d4af37; box-shadow: 8px 8px 0px rgba(0,0,0,0.2); padding: 20px; position: relative; }
-        .window-header { background: #d4af37; color: white; padding: 5px 15px; margin: -20px -20px 20px -20px; font-size: 18px; display: flex; justify-content: space-between; }
-        .main-ui { display: flex; gap: 20px; }
-        .left-panel { width: 260px; text-align: center; border-right: 2px solid #eee; padding-right: 20px; }
-        .stickman-frame { border: 4px solid #d4af37; height: 220px; background: white; display: flex; justify-content: center; align-items: center; margin-bottom: 10px; position: relative; }
-        
-        /* 스테이터스 창 */
-        .status-window { border: 2px solid #d4af37; padding: 10px; background: #fef9e7; text-align: left; }
-        .stat-label { font-size: 13px; margin-bottom: 3px; display: flex; justify-content: space-between; }
-        .gauge-bg { background: #e0e0e0; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 8px; border: 1px solid #999; }
-        .gauge-fill { height: 100%; width: 20%; transition: width 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-
-        /* 활동 영역 */
-        .right-panel { flex: 1; }
-        .menu-title { font-size: 20px; color: #db7093; margin-bottom: 15px; border-bottom: 2px solid #ffb6c1; display: inline-block; }
-        .scan-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .pixel-btn { background: #f8f9fa; border: 3px outset #fff; padding: 12px; cursor: pointer; text-align: center; transition: 0.2s; }
-        .pixel-btn:hover { background: #fff0f5; transform: scale(1.02); }
-        .pixel-btn:active { border-style: inset; background: #eee; }
-
-        /* 이모지 믹스 존 */
-        .mix-zone { background: #222; border: 3px solid #d4af37; padding: 15px; color: #ffd700; border-radius: 10px; text-align: center; margin-top: 15px; }
-        .diary-box { width: 100%; height: 60px; margin-top: 10px; border: 2px solid #d4af37; padding: 10px; font-family: 'DungGeunMo'; resize: none; box-sizing: border-box; }
-
-        /* 팝업 모달 */
-        .modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; border: 5px solid #d4af37; z-index: 1000; padding: 20px; width: 350px; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-        .emoji-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; font-size: 30px; cursor: pointer; text-align: center; }
-    </style>
 </head>
 <body>
 
 <div class="game-window">
-    <div class="window-header">
-        <span>PRINCESS MAKER: 6-5 EMOTION</span>
-        <span id="currentDate">2026.02.27</span>
-    </div>
-
+    <div class="window-header"><span>6학년 5반 감정 메이커</span><span>2026.02.27</span></div>
+    
     <div class="main-ui">
         <div class="left-panel">
-            <div class="stickman-frame">
-                <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Man%20Standing.png" width="130">
-                <div id="statusBadge" style="position:absolute; bottom:5px; right:5px; background: #ff69b4; color:white; font-size:10px; padding:2px 5px;">기다림</div>
+            <div class="char-frame">
+                <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Man%20Standing.png" width="100">
             </div>
-            <div class="status-window">
-                <div class="stat-label"><span>에너지(의욕)</span><span id="val-en">20%</span></div>
-                <div class="gauge-bg"><div id="bar-en" class="gauge-fill" style="background: #ff4757; width: 20%;"></div></div>
-                <div class="stat-label"><span>회복력(안정)</span><span id="val-re">20%</span></div>
-                <div class="gauge-bg"><div id="bar-re" class="gauge-fill" style="background: #2ed573; width: 20%;"></div></div>
-                <div class="stat-label"><span>감성(민감)</span><span id="val-se">20%</span></div>
-                <div class="gauge-bg"><div id="bar-se" class="gauge-fill" style="background: #1e90ff; width: 20%;"></div></div>
+            <div class="status-box">
+                <div class="stat-row">에너지 <div class="gauge-bg"><div id="bar-en" class="gauge-fill" style="background: #ff4757;"></div></div></div>
+                <div class="stat-row">회복력 <div class="gauge-bg"><div id="bar-re" class="gauge-fill" style="background: #2ed573;"></div></div></div>
             </div>
         </div>
 
         <div class="right-panel">
-            <div class="menu-title">♥ 감정 그룹 스캔 ♥</div>
-            <div class="scan-grid">
-                <div class="pixel-btn" onclick="openModal('green')">🏃 활기참</div>
-                <div class="pixel-btn" onclick="openModal('blue')">☁️ 차분함</div>
-                <div class="pixel-btn" onclick="openModal('red')">⚡ 짜증/화</div>
-                <div class="pixel-btn" onclick="openModal('yellow')">✨ 행복함</div>
+            <h3>[ 감정 아이콘 선택 ]</h3>
+            <button class="pixel-btn" onclick="openMix('green')">🏃 활기</button>
+            <button class="pixel-btn" onclick="openMix('blue')">☁️ 차분</button>
+            
+            <div id="mixZone" style="display:none; margin-top:15px; background:#222; color:#ffd700; padding:15px; text-align:center;">
+                <span id="s1">?</span> + <span id="s2">?</span> = <span id="sR">?</span>
             </div>
 
-            <div id="kitchenArea" style="display:none;">
-                <div class="mix-zone">
-                    <span id="slot1">?</span> + <span id="slot2">?</span> = <span id="mixResult" style="font-size:40px;">?</span>
-                    <div id="analysisText" style="font-size:12px; margin-top:5px; color:#fff;">감정 분석 중...</div>
-                </div>
-                <textarea id="diary" class="diary-box" placeholder="오늘 왜 그런 마음이 들었나요?"></textarea>
-                <div id="questBox" style="margin-top:10px; padding:10px; background:#fff5ee; border:1px solid #ffb6c1; font-size:14px;">
-                    <b>[선택된 퀘스트]</b><br><span id="questText">...</span>
-                </div>
-                <button class="pixel-btn" style="width:100%; margin-top:10px; background:#ffeaa7;" onclick="saveAndGo()">활동 완료 (교실 입장)</button>
-            </div>
+            <textarea id="diary" class="diary-box" style="margin-top:10px;" placeholder="오늘 기분은 어떤가요?"></textarea>
+            <p id="questText" style="font-size:13px; color:blue;"></p>
+            <button class="pixel-btn" id="finishBtn" style="display:none; width:100%;" onclick="saveData()">교실 입장하기</button>
         </div>
     </div>
 </div>
 
-<div id="emojiModal" class="modal">
-    <h3 style="margin-top:0;">감정 조각 선택</h3>
-    <div id="emojiGrid" class="emoji-grid"></div>
-</div>
-
 <script>
-    // [Firebase 설정] - 본인 것으로 반드시 교체!
+    // ★★★ [주의] 아래 내용을 본인의 Firebase 설정값으로 반드시 채워주세요! ★★★
     const firebaseConfig = {
-        apiKey: "AIza...",
-        authDomain: "...",
-        databaseURL: "...", // 반드시 입력!
-        projectId: "...",
-        appId: "..."
+        apiKey: "AIzaSyDw773x1yot2uncAMl_gTQ6z6Njhgh1Od8",
+        authDomain: "secret-quest-class.firebaseapp.com",
+        projectId: "secret-quest-class",
+        storageBucket: "secret-quest-class.firebasestorage.app",
+        messagingSenderId: "397245266210",
+        appId: "1:397245266210:web:fde35d6a4dfd6ca7070d7b",
+        measurementId: "G-FJ44D15YPN"
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    const emotionData = {
-        green: { emojis: ["😆","🏃","🔋","⚽","🔥","💪","😎","🤩","🚀","🎊"], stat: 'energy', quests: ["쉬는 시간에 친구와 하이파이브 3번 하기", "운동장 한 바퀴 뛰고 오기", "오늘 배울 내용 목차 큰 소리로 읽기"] },
-        blue: { emojis: ["😌","☁️","🍵","📚","💤","🎐","🧸","🌊","🧘","🌿"], stat: 'resilience', quests: ["나를 응원하는 문장 일기장에 쓰기", "심호흡 5번 하고 선생님께 보고하기", "조용히 눈 감고 클래식 1분 감상하기"] },
-        red: { emojis: ["😡","⚡","💥","🌪️","🧨","🌋","🌫️","🧊","🧱","🔥"], stat: 'sensitivity', quests: ["기분 나쁜 일을 종이에 적어 구겨 버리기", "자리에서 일어나 스트레칭 3세트 하기", "마음속으로 10부터 0까지 천천히 세기"] },
-        yellow: { emojis: ["🥰","✨","⭐","🌈","🍭","💎","🎨","🎡","🎈","🌻"], stat: 'energy', quests: ["친구에게 칭찬 쪽지 써서 몰래 전달하기", "장래희망 관련 책 도서관에서 찾아보기", "급식 시간에 조리사님께 감사 인사 크게 하기"] }
-    };
-
-    let s1 = "", s2 = "", finalEmoji = "", currentGroup = "";
-    let stats = { energy: 20, resilience: 20, sensitivity: 20 };
-
-    function openModal(group) {
-        currentGroup = group;
-        document.getElementById('emojiModal').style.display = 'block';
-        const grid = document.getElementById('emojiGrid'); grid.innerHTML = "";
-        emotionData[group].emojis.forEach(e => {
-            const span = document.createElement('span'); span.textContent = e;
-            span.onclick = () => selectEmoji(e);
-            grid.appendChild(span);
-        });
-    }
-
-    function selectEmoji(e) {
-        if(!s1) { s1 = e; document.getElementById('slot1').textContent = e; }
-        else { 
-            s2 = e; document.getElementById('slot2').textContent = e;
-            calculateStatus();
-            document.getElementById('emojiModal').style.display = 'none';
-            document.getElementById('kitchenArea').style.display = 'block';
-        }
-    }
-
-    function calculateStatus() {
-        // 기본 알고리즘: 그룹 보너스 + 이모지 보너스
-        if(currentGroup === 'green') stats.energy += 40;
-        else if(currentGroup === 'blue') stats.resilience += 40;
-        else if(currentGroup === 'red') stats.sensitivity += 40;
-        else if(currentGroup === 'yellow') { stats.energy += 20; stats.resilience += 20; }
-
-        finalEmoji = "✨"; // 실제 합성은 이모지 이미지 조합 혹은 대표 이모지
-        document.getElementById('mixResult').textContent = finalEmoji;
-        document.getElementById('analysisText').textContent = "메타인지 분석 완료: 스탯이 변화함";
+    let e1="", e2="", group="";
+    
+    function openMix(g) {
+        group = g;
+        e1 = (g === 'green') ? "😆" : "😌";
+        e2 = (g === 'green') ? "🔥" : "🍵";
+        document.getElementById('s1').textContent = e1;
+        document.getElementById('s2').textContent = e2;
+        document.getElementById('sR').textContent = "✨";
+        document.getElementById('mixZone').style.display = "block";
+        document.getElementById('finishBtn').style.display = "block";
         
-        // UI 업데이트
-        document.getElementById('bar-en').style.width = Math.min(stats.energy, 100) + "%";
-        document.getElementById('bar-re').style.width = Math.min(stats.resilience, 100) + "%";
-        document.getElementById('bar-se').style.width = Math.min(stats.sensitivity, 100) + "%";
-        document.getElementById('val-en').textContent = stats.energy + "%";
-        
-        // 퀘스트 랜덤 선택
-        const qList = emotionData[currentGroup].quests;
-        document.getElementById('questText').textContent = qList[Math.floor(Math.random()*qList.length)];
+        // 스탯 바 애니메이션
+        document.getElementById('bar-en').style.width = (g === 'green' ? "80%" : "30%");
+        document.getElementById('bar-re').style.width = (g === 'green' ? "20%" : "90%");
+        document.getElementById('questText').textContent = "오늘의 퀘스트: 친구에게 인사하기!";
     }
 
-    function saveAndGo() {
+    function saveData() {
         const diary = document.getElementById('diary').value;
-        const quest = document.getElementById('questText').textContent;
-        // 1번 학생 예시 (로그인에서 받아온 번호를 써야 함)
         database.ref('room/student1').set({
-            name: "홍길동", num: 1, emoji: finalEmoji, 
-            stats: stats, diary: diary, quest: quest, status: 'online'
-        }).then(() => location.href = 'classroom.html');
+            name: "홍길동", num: 1, emoji: "✨", diary: diary, status: "online"
+        }).then(() => location.href = "classroom.html");
     }
 </script>
 </body>
