@@ -2,50 +2,95 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>6학년 5반 교실 현황</title>
+    <title>6-5 관리자 모드</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
-<div class="game-window">
-    <div class="window-header"><span>🏫 6학년 5반 실시간 교실</span></div>
-    <div class="classroom-floor" id="floor"></div>
+
+<div class="tablet-wrapper">
+    <div class="header">
+        <span>🏫 6-5 실시간 감정 지도 & 퀘스트 관리</span>
+        <button class="btn-pixel" style="background:#fff; color:#333;" onclick="openAdminQuest()">➕ 퀘스트 추가하기</button>
+    </div>
+
+    <div class="main-content">
+        <div class="classroom-floor" id="deskContainer" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:15px; flex:2;">
+            </div>
+
+        <div class="quest-footer" style="flex:0.8; height:auto; overflow-y:auto;">
+            <strong>📜 현재 등록된 퀘스트 목록</strong>
+            <div id="adminQuestList" style="margin-top:10px;"></div>
+        </div>
+    </div>
+</div>
+
+<div id="studentDetailModal" class="modal" onclick="this.style.display='none'">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <div id="detName" style="font-size:20px; border-bottom:1px solid #d4af37; padding-bottom:10px;"></div>
+        <div id="detEmoji" style="font-size:100px; text-align:center; margin:20px 0;"></div>
+        <div id="detTags" style="color:#3897f0; font-weight:bold;"></div>
+        <div id="detDiary" style="margin:10px 0; color:#ccc; font-size:14px;"></div>
+        <div id="detQuest" style="background:#444; padding:10px; border-radius:10px; color:#ffd700;"></div>
+    </div>
 </div>
 
 <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyDw773x1yot2uncAMl_gTQ6z6Njhgh1Od8",
-      authDomain: "secret-quest-class.firebaseapp.com",
-      databaseURL: "https://secret-quest-class-default-rtdb.firebaseio.com", // ← 추가됨!
-      projectId: "secret-quest-class",
-      storageBucket: "secret-quest-class.firebasestorage.app",
-      messagingSenderId: "397245266210",
-      appId: "1:397245266210:web:fde35d6a4dfd6ca7070d7b"
-    };
+    const firebaseConfig = { /* 이전과 동일한 Firebase 설정 입력 */ };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    const floor = document.getElementById('floor');
+    // 책상 초기화 (23명)
+    const container = document.getElementById('deskContainer');
     for(let i=1; i<=23; i++) {
         const d = document.createElement('div');
         d.className = 'desk'; d.id = `desk-${i}`;
-        d.textContent = i + "번";
-        floor.appendChild(d);
+        d.innerHTML = `<div style="font-size:12px;">${i}번</div><div style="color:#888;">비어있음</div>`;
+        container.appendChild(d);
     }
 
+    // 데이터 실시간 수신
     database.ref('room/').on('value', (snap) => {
         const data = snap.val();
         if(!data) return;
-        for(let key in data) {
-            const s = data[key];
+        Object.values(data).forEach(s => {
             const desk = document.getElementById(`desk-${s.num}`);
             if(desk) {
-                desk.className = "desk online";
-                desk.innerHTML = `${s.num}번<br>${s.name}`;
-                desk.onclick = () => alert(`[${s.name}의 기록]\n${s.diary}`);
+                desk.className = 'desk online';
+                desk.style.background = 'white';
+                desk.style.border = '3px solid #d4af37';
+                desk.innerHTML = `<div style="font-size:30px;">${s.emoji || '🧍'}</div><div style="font-weight:bold; color:#333;">${s.name}</div>`;
+                desk.onclick = () => showDetail(s);
             }
-        }
+        });
+    });
+
+    function showDetail(s) {
+        document.getElementById('studentDetailModal').style.display = 'flex';
+        document.getElementById('detName').innerText = `${s.num}번 ${s.name} 학생`;
+        document.getElementById('detEmoji').innerText = s.emoji || '🧍';
+        document.getElementById('detTags').innerText = s.tags || '#태그없음';
+        document.getElementById('detDiary').innerText = s.diary || '작성된 일기가 없습니다.';
+        document.getElementById('detQuest').innerText = `🎯 현재 퀘스트: ${s.quest || '수행 중인 퀘스트 없음'}`;
+    }
+
+    // 교사가 새로운 퀘스트 추가
+    function openAdminQuest() {
+        const q = prompt("새로운 감정 미션을 입력하세요:");
+        if(q) database.ref('commonQuests').push(q);
+    }
+
+    // 공통 퀘스트 목록 로드
+    database.ref('commonQuests').on('value', snap => {
+        const list = document.getElementById('adminQuestList');
+        list.innerHTML = "";
+        snap.forEach(child => {
+            const div = document.createElement('div');
+            div.className = 'quest-opt'; div.style.background='white'; div.style.margin='5px 0';
+            div.innerText = child.val();
+            list.appendChild(div);
+        });
     });
 </script>
 </body>
