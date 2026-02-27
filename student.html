@@ -2,102 +2,156 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>6학년 5반 감정 육성</title>
+    <title>Emotion Quest 6-5</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 </head>
 <body>
-<div class="game-window">
-    <div class="window-header"><span>6학년 5반 감정 메이커</span><span>2026.02.27</span></div>
-    <div class="main-ui">
-        <div class="left-panel">
-            <div class="char-frame">
-                <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Man%20Standing.png" width="100">
-            </div>
-            <div class="status-box">
-                <div class="stat-row">에너지 <div class="gauge-bg"><div id="bar-en" class="gauge-fill" style="background: #ff4757; width:20%;"></div></div></div>
-                <div class="stat-row">회복력 <div class="gauge-bg"><div id="bar-re" class="gauge-fill" style="background: #2ed573; width:20%;"></div></div></div>
-            </div>
+
+<div class="tablet-wrapper">
+    <div class="header">
+        <span style="font-size:22px;">EMOTION MAKER: 6-5 CLASS</span>
+        <div>
+            <button class="btn-pixel" style="font-size:14px; padding:5px 10px;" onclick="setChar(1)">1번 남학생</button>
+            <button class="btn-pixel" style="font-size:14px; padding:5px 10px;" onclick="setChar(2)">2번 여학생</button>
         </div>
-        <div class="right-panel">
-            <h3>[ 감정 아이콘 선택 ]</h3>
-            <button class="pixel-btn" onclick="openMix('green')">🏃 활기</button>
-            <button class="pixel-btn" onclick="openMix('blue')">☁️ 차분</button>
-            <div id="mixZone" style="display:none; margin-top:15px; background:#222; color:#ffd700; padding:15px; text-align:center;">
-                <span id="s1">?</span> + <span id="s2">?</span> = <span id="sR">?</span>
+    </div>
+
+    <div class="main-content">
+        <div class="left-zone">
+            <h2 id="nameLabel" style="margin-top:0;">1번 홍길동</h2>
+            <div class="char-frame">
+                <img id="charImg" src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Man%20Standing.png" class="char-img">
             </div>
-            <textarea id="diary" class="diary-box" style="margin-top:10px; width:100%; height:60px;" placeholder="오늘 기분은 어떤가요?"></textarea>
-            <p id="questText" style="font-size:13px; color:blue;"></p>
-            <button class="pixel-btn" id="finishBtn" style="display:none; width:100%;" onclick="saveData()">교실 입장하기</button>
+            <button class="btn-pixel" style="width:100%; height:60px; font-size:24px; background:#ffd700;" onclick="openKitchen()">🎨 감정 섞기 (Emoji Kitchen)</button>
+        </div>
+
+        <div class="right-zone">
+            <div class="emotion-card-making">
+                <div style="font-size:14px; border-bottom:1px solid #444; padding-bottom:5px;">REAL-TIME CARD PREVIEW</div>
+                <div class="card-preview-img" id="cardEmoji">✨</div>
+                <div id="cardTags" style="color:#3897f0; font-weight:bold;">#감정을_선택해주세요</div>
+                <textarea id="diaryIn" style="width:100%; height:60px; background:#222; color:white; border:1px solid #444; padding:10px;" placeholder="오늘의 마음 한 줄 기록..." oninput="syncCard()"></textarea>
+            </div>
+
+            <div class="quest-footer">
+                <strong>[ 오늘의 감정 퀘스트 선택 ]</strong>
+                <div class="quest-grid" id="questGrid">
+                    <div style="grid-column: 1 / span 3; color:#888; text-align:center; padding-top:20px;">감정을 먼저 섞어주세요!</div>
+                </div>
+            </div>
+            
+            <button class="btn-pixel" style="background:#ffb6c1; height:60px;" onclick="saveToClass()">교실로 전송하기</button>
+        </div>
+    </div>
+</div>
+
+<div id="kitchenModal" class="modal">
+    <div class="kitchen-content">
+        <h2 style="margin-top:0; text-align:center;">감정 믹스하기</h2>
+        <div class="emoji-grid" id="emojiPallet"></div>
+        
+        <div class="formula-giant">
+            <span id="s1">?</span> <span>+</span> <span id="s2">?</span> <span>=</span> <span id="sRes">?</span>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div id="tagOptions" style="display:flex; gap:5px; flex-wrap:wrap; width:70%;"></div>
+            <button class="btn-pixel" style="background:#2ed573; color:white;" onclick="closeKitchen()">합성 완료</button>
         </div>
     </div>
 </div>
 
 <script>
-   // student.html의 <script> 부분
-const firebaseConfig = {
-    apiKey: "AIzaSyDw773x1yot2uncAMl_gTQ6z6Njhgh1Od8",
-    authDomain: "secret-quest-class.firebaseapp.com",
-    databaseURL: "https://secret-quest-class-default-rtdb.firebaseio.com/", // ← 주소 끝에 / 확인
-    projectId: "secret-quest-class",
-    storageBucket: "secret-quest-class.firebasestorage.app",
-    messagingSenderId: "397245266210",
-    appId: "1:397245266210:web:fde35d6a4dfd6ca7070d7b"
-};
-
-// 초기화 확인용 로그 추가
-try {
+    // Firebase 설정 (기존과 동일)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDw773x1yot2uncAMl_gTQ6z6Njhgh1Od8",
+        authDomain: "secret-quest-class.firebaseapp.com",
+        databaseURL: "https://secret-quest-class-default-rtdb.firebaseio.com/",
+        projectId: "secret-quest-class",
+        storageBucket: "secret-quest-class.firebasestorage.app",
+        messagingSenderId: "397245266210",
+        appId: "1:397245266210:web:fde35d6a4dfd6ca7070d7b"
+    };
     firebase.initializeApp(firebaseConfig);
-    var database = firebase.database();
-    console.log("Firebase 연결 성공!");
-} catch (e) {
-    console.error("Firebase 초기화 에러:", e);
-}
+    const database = firebase.database();
 
-function saveData() {
-    const diaryValue = document.getElementById('diary').value;
-    
-    // 데이터 전송 전 알림
-    console.log("데이터 저장 시도 중...");
+    let curId = 1, v1 = "", v2 = "", selTags = [], selQuest = "";
+    const emojiList = ["😊","😆","🥰","😎","🥳","😌","☁️","🍵","🌱","🌊","💢","😡","😢","😫","🔥","✨"];
+    const tagList = ["#즐거움", "#기대됨", "#평온함", "#당황함", "#피곤함", "#짜증남", "#용기남", "#위로필요"];
 
-    database.ref('room/student1').set({
-        name: "홍길동",
-        num: 1,
-        emoji: "✨",
-        diary: diaryValue,
-        status: "online",
-        timestamp: new Date().getTime() // 언제 보냈는지 확인용
-    }).then(() => {
-        alert("성공적으로 교실에 전송되었습니다!");
-        location.href = "classroom.html";
-    }).catch((error) => {
-        console.error("저장 실패:", error);
-        alert("저장에 실패했습니다: " + error.message);
-    });
-}
-
-    let e1="", e2="", group="";
-    function openMix(g) {
-        group = g;
-        e1 = (g === 'green') ? "😆" : "😌";
-        e2 = (g === 'green') ? "🔥" : "🍵";
-        document.getElementById('s1').textContent = e1;
-        document.getElementById('s2').textContent = e2;
-        document.getElementById('sR').textContent = "✨";
-        document.getElementById('mixZone').style.display = "block";
-        document.getElementById('finishBtn').style.display = "block";
-        document.getElementById('bar-en').style.width = (g === 'green' ? "80%" : "30%");
-        document.getElementById('bar-re').style.width = (g === 'green' ? "20%" : "90%");
-        document.getElementById('questText').textContent = "오늘의 퀘스트: 친구에게 인사하기!";
+    function init() {
+        const p = document.getElementById('emojiPallet');
+        emojiList.forEach(e => {
+            const b = document.createElement('button'); b.className='btn-pixel'; b.style.fontSize='25px'; b.innerText=e;
+            b.onclick=()=>pick(e); p.appendChild(b);
+        });
+        const t = document.getElementById('tagOptions');
+        tagList.forEach(tg => {
+            const b = document.createElement('button'); b.className='btn-pixel'; b.style.fontSize='12px'; b.innerText=tg;
+            b.onclick=()=>toggleTag(tg, b); t.appendChild(b);
+        });
     }
 
-    function saveData() {
-        const diary = document.getElementById('diary').value;
-        database.ref('room/student1').set({
-            name: "홍길동", num: 1, emoji: "✨", diary: diary, status: "online"
-        }).then(() => { alert("저장 완료!"); location.href = "classroom.html"; });
+    function setChar(id) {
+        curId = id;
+        document.getElementById('nameLabel').innerText = id === 1 ? "1번 홍길동" : "2번 김지수";
+        document.getElementById('charImg').src = id === 1 
+            ? "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Man%20Standing.png"
+            : "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Woman%20Standing.png";
     }
+
+    function openKitchen() { document.getElementById('kitchenModal').style.display='flex'; }
+    function closeKitchen() { 
+        document.getElementById('kitchenModal').style.display='none';
+        document.getElementById('cardEmoji').innerText = document.getElementById('sRes').innerText;
+        generateQuests();
+        syncCard();
+    }
+
+    function pick(e) {
+        if(!v1) { v1=e; document.getElementById('s1').innerText=e; }
+        else { 
+            v2=e; document.getElementById('s2').innerText=e;
+            document.getElementById('sRes').innerText = "🔮"; // 합성 결과
+        }
+    }
+
+    function toggleTag(tg, b) {
+        if(selTags.includes(tg)) { selTags = selTags.filter(i=>i!==tg); b.style.background='#ffb6c1'; }
+        else if(selTags.length < 3) { selTags.push(tg); b.style.background='#ffd700'; }
+    }
+
+    function generateQuests() {
+        const g = document.getElementById('questGrid');
+        g.innerHTML = "";
+        const opts = ["친구에게 웃으며 인사하기", "나를 위한 칭찬 1줄 쓰기", "심호흡 5번 크게 하기"];
+        opts.forEach(o => {
+            const b = document.createElement('button'); b.className='btn-pixel'; b.innerText=o; b.style.fontSize='12px';
+            b.onclick=() => {
+                Array.from(g.children).forEach(c=>c.classList.remove('selected'));
+                b.classList.add('selected'); selQuest = o; syncCard();
+            };
+            g.appendChild(b);
+        });
+    }
+
+    function syncCard() {
+        document.getElementById('cardTags').innerText = selTags.join(' ');
+        document.getElementById('cardDiary').innerText = document.getElementById('diaryIn').value;
+    }
+
+    function saveToClass() {
+        if(!selQuest) return alert("오늘의 퀘스트를 선택해주세요!");
+        database.ref('room/student' + curId).set({
+            name: curId === 1 ? "홍길동" : "김지수", num: curId,
+            emoji: document.getElementById('cardEmoji').innerText,
+            tags: selTags.join(' '), diary: document.getElementById('diaryIn').value,
+            quest: selQuest, status: "online"
+        }).then(()=> alert("교실 전송 성공!"));
+    }
+    init();
 </script>
 </body>
 </html>
