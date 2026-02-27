@@ -1,0 +1,91 @@
+@font-face {
+    font-family: 'DungGeunMo';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/DungGeunMo.woff') format('woff');
+}
+
+:root {
+    --gold: #d4af37;
+    --window-bg: #fffafa;
+    --text-color: #5d4037;
+    --bg-pink: #fbc2eb;
+}
+
+body {
+    background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+    font-family: 'DungGeunMo', sans-serif;
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+/* 프린세스 메이커 스타일 메인 윈도우 */
+.game-window {
+    width: 850px;
+    background: var(--window-bg);
+    border: 6px double var(--gold);
+    box-shadow: 5px 5px 0px rgba(0,0,0,0.2);
+    padding: 20px;
+    position: relative;
+}
+
+.window-header {
+    background: var(--gold);
+    color: white;
+    padding: 5px 15px;
+    margin: -20px -20px 20px -20px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+}
+
+/* 캐릭터 및 스테이터스 배치 */
+.main-ui {
+    display: flex;
+    gap: 20px;
+}
+
+.left-panel { width: 250px; text-align: center; }
+.stickman-frame {
+    border: 4px solid var(--gold);
+    height: 250px;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* 스탯 바 스타일 */
+.status-window {
+    border: 2px solid var(--gold);
+    padding: 10px;
+    background: #fef9e7;
+    text-align: left;
+}
+.stat-row { margin: 5px 0; font-size: 14px; }
+.gauge-bg { background: #ddd; height: 10px; width: 100%; border-radius: 5px; overflow: hidden; }
+.gauge-fill { height: 100%; width: 20%; transition: width 0.5s; }
+
+/* 중앙 활동 영역 */
+.center-panel { flex: 1; border-left: 2px solid #eee; padding-left: 20px; }
+
+/* 픽셀 버튼 */
+.pixel-btn {
+    background: #eee;
+    border: 3px outset #fff;
+    padding: 10px;
+    cursor: pointer;
+    font-family: 'DungGeunMo';
+    margin: 5px;
+    display: inline-block;
+}
+.pixel-btn:active { border-style: inset; }
+
+.modal {
+    display: none;
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: white; border: 4px solid var(--gold); z-index: 1000; padding: 20px;
+}
