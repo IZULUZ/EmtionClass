@@ -2,77 +2,54 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>우리 반 교실 - 교사 화면</title>
+    <title>6학년 5반 교실 현황</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
-    <style>
-        body { font-family: 'Pretendard', sans-serif; background: #eef2f7; padding: 40px; }
-        .dashboard-header { display: flex; justify-content: space-between; align-items: center; }
-        .desk-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-top: 30px; }
-        .student-desk { background: #ddd; border-radius: 15px; height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.3s; color: #777; }
-        .student-desk.active { background: white; border: 3px solid #7c6df2; color: #333; box-shadow: 0 5px 15px rgba(124,109,242,0.2); }
-        
-        /* 팝업 스타일 */
-        .overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:100; overflow-y: auto; }
-        .all-cards-container { display: flex; flex-wrap: wrap; gap: 20px; padding: 50px; justify-content: center; }
-        .mini-card { background: #1a1a1a; color: white; width: 200px; padding: 20px; border-radius: 20px; border: 3px solid #ffd700; text-align: center; }
-        button { background: #7c6df2; color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; }
-    </style>
 </head>
 <body>
-    <div class="dashboard-header">
-        <h1>🏫 3학년 1반 마음 교실</h1>
-        <button onclick="openAllCards()">전체 감정 카드 확인하기 📋</button>
-    </div>
 
-    <div class="desk-grid" id="deskGrid">
-        </div>
-
-    <div id="allCardsPopup" class="overlay" onclick="this.style.display='none'">
-        <div class="all-cards-container" id="cardsWrapper" onclick="event.stopPropagation()">
-            </div>
-    </div>
+<div class="game-window">
+    <div class="window-header"><span>🏫 6학년 5반 실시간 교실</span></div>
+    <div class="classroom-floor" id="floor"></div>
+</div>
 
 <script>
-    const firebaseConfig = { /* 동일한 정보 */ };
+    // ★★★ [주의] student.html과 똑같은 Firebase 설정값을 넣어주세요! ★★★
+    const firebaseConfig = {
+      apiKey: "AIzaSyDw773x1yot2uncAMl_gTQ6z6Njhgh1Od8",
+      authDomain: "secret-quest-class.firebaseapp.com",
+      projectId: "secret-quest-class",
+      storageBucket: "secret-quest-class.firebasestorage.app",
+      messagingSenderId: "397245266210",
+      appId: "1:397245266210:web:fde35d6a4dfd6ca7070d7b",
+      measurementId: "G-FJ44D15YPN"
+    };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // 23개 책상 미리 그리기
-    const grid = document.getElementById('deskGrid');
+    // 책상 생성
+    const floor = document.getElementById('floor');
     for(let i=1; i<=23; i++) {
         const d = document.createElement('div');
-        d.className = 'student-desk';
-        d.id = `desk-${i}`;
-        d.innerHTML = `<span>${i}번</span>`;
-        grid.appendChild(d);
+        d.className = 'desk'; d.id = `desk-${i}`;
+        d.textContent = i + "번";
+        floor.appendChild(d);
     }
 
-    // 데이터 실시간 감시
-    database.ref('emotions/').on('value', (snapshot) => {
-        const data = snapshot.val();
-        const wrapper = document.getElementById('cardsWrapper');
-        wrapper.innerHTML = "<h1>우리 반 감정 카드 모음</h1><div style='width:100%; text-align:right;'><button onclick='closeAll()'>닫기</button></div>";
-
+    // 실시간 데이터 수신
+    database.ref('room/').on('value', (snap) => {
+        const data = snap.val();
         for(let key in data) {
             const s = data[key];
             const desk = document.getElementById(`desk-${s.num}`);
             if(desk) {
-                desk.className = 'student-desk active';
-                desk.innerHTML = `<strong>${s.name}</strong><br><small>수행중: ${s.quest.substring(0,8)}...</small>`;
-                desk.onclick = () => alert(`[${s.name}의 퀘스트]\n${s.quest}\n\n[이유]\n${s.diary}`);
+                desk.className = "desk online";
+                desk.innerHTML = `${s.num}번<br>${s.name}`;
+                desk.onclick = () => alert(`[${s.name}의 기록]\n${s.diary}`);
             }
-
-            // 전체 카드 팝업용 카드 생성
-            const card = document.createElement('div');
-            card.className = 'mini-card';
-            card.innerHTML = `<h3>${s.num}번 ${s.name}</h3><div style='font-size:40px;'>${s.emoji}</div><p>${s.diary}</p><div style='color:#ffd700; font-size:12px;'>${s.quest}</div>`;
-            wrapper.appendChild(card);
         }
     });
-
-    function openAllCards() { document.getElementById('allCardsPopup').style.display = 'block'; }
-    function closeAll() { document.getElementById('allCardsPopup').style.display = 'none'; }
 </script>
 </body>
 </html>
